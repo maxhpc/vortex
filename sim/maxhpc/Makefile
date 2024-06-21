@@ -2,7 +2,7 @@ include ../common.mk
 
 DESTDIR ?= $(CURDIR)
 
-SRC_DIR = $(VORTEX_HOME)/sim/rtlsim
+SRC_DIR = $(VORTEX_HOME)/sim/maxhpc
 
 CXXFLAGS += -std=c++17 -Wall -Wextra -Wfatal-errors -Wno-array-bounds
 CXXFLAGS += -fPIC -Wno-maybe-uninitialized
@@ -37,12 +37,7 @@ SRCS = $(COMMON_DIR)/util.cpp $(COMMON_DIR)/mem.cpp $(COMMON_DIR)/rvfloats.cpp
 SRCS += $(DPI_DIR)/util_dpi.cpp $(DPI_DIR)/float_dpi.cpp
 SRCS += $(SRC_DIR)/processor.cpp
 
-ifdef AXI_BUS
-	TOP = Vortex_axi
-	CXXFLAGS += -DAXI_BUS
-else
-	TOP = Vortex
-endif
+TOP = Vortex
 
 VL_FLAGS += --exe
 VL_FLAGS += --language 1800-2009 --assert -Wall -Wpedantic
@@ -78,7 +73,7 @@ ifdef PERF
 	CXXFLAGS += -DPERF_ENABLE
 endif
 
-PROJECT := rtlsim
+PROJECT := maxhpc
 
 all: $(DESTDIR)/$(PROJECT)
 

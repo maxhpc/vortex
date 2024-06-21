@@ -104,6 +104,9 @@ run-simx: $(PROJECT) kernel.pocl
 run-rtlsim: $(PROJECT) kernel.pocl   
 	LD_LIBRARY_PATH=$(POCL_RT_PATH)/lib:$(ROOT_DIR)/runtime/rtlsim:$(LD_LIBRARY_PATH) ./$(PROJECT) $(OPTS)
 
+run-maxhpc: $(PROJECT) kernel.pocl   
+	LD_LIBRARY_PATH=$(POCL_RT_PATH)/lib:$(ROOT_DIR)/runtime/maxhpc:$(LD_LIBRARY_PATH) ./$(PROJECT) $(OPTS)
+
 run-opae: $(PROJECT) kernel.pocl
 	SCOPE_JSON_PATH=$(ROOT_DIR)/runtime/opae/scope.json OPAE_DRV_PATHS=$(OPAE_DRV_PATHS) LD_LIBRARY_PATH=$(POCL_RT_PATH)/lib:$(ROOT_DIR)/runtime/opae:$(LD_LIBRARY_PATH) ./$(PROJECT) $(OPTS)
 

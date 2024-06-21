@@ -23,7 +23,7 @@ show_help()
 {
     show_usage
     echo "  where"
-    echo "--driver: gpu, simx, rtlsim, oape, xrt"
+    echo "--driver: gpu, simx, rtlsim, maxhpc, oape, xrt"
     echo "--app: any subfolder test under regression or opencl"
     echo "--class: 0=disable, 1=pipeline, 2=memsys"
     echo "--rebuild: 0=disable, 1=force, 2=auto, 3=temp"
@@ -138,6 +138,9 @@ case $DRIVER in
         ;;
     rtlsim)
         DRIVER_PATH=$ROOT_DIR/runtime/rtlsim
+        ;;
+    maxhpc)
+        DRIVER_PATH=$ROOT_DIR/runtime/maxhpc
         ;;
     opae)
         DRIVER_PATH=$ROOT_DIR/runtime/opae
