@@ -219,6 +219,7 @@ private:
    Vcnxt_->timeInc(1);
   }
 
+bool t[10] = {0};
   void eval_avs_bus() {
    if (device_->reset) {
     device_->mem_req_ready = 0;
@@ -231,8 +232,21 @@ private:
       }
       //
       if (device_->mem_req_valid) {
-       memset(device_->mem_rsp_data.data(), 0x12, 64);
-       device_->mem_rsp_valid = 1;
+       if (!device_->mem_req_rw) {
+        if (ram_ != nullptr) {
+         memcpy(device_->mem_rsp_data.data(), ram_+(device_->mem_req_addr*64), 64);
+         device_->mem_rsp_tag = device_->mem_req_tag;
+         device_->mem_rsp_valid = 1;
+        }
+       }
+        else {
+         uint64_t byteen = device_->mem_req_byteen;
+         for (int i=0; i<64; i++) {
+          if (byteen & (1ul<<i)) {
+           *((uint8_t*)ram_+(device_->mem_req_addr*64) +i) = *((uint8_t*)device_->mem_req_data.data() +i);
+          }
+         }
+        }
       }
       device_->mem_req_ready = device_->mem_req_valid;
      }
