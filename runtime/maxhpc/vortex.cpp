@@ -26,11 +26,10 @@
 #include <VX_config.h>
 #include <VX_types.h>
 
-#include <mem.h>
 #include <util.h>
-#include <processor.h>
 
-#include <string.h>
+#include <maxhpc.h>
+
 
 #ifndef NDEBUG
 #define DBGPRINT(format, ...) do { printf("[VXDRV] " format "", ##__VA_ARGS__); } while (0)
@@ -45,60 +44,41 @@ using namespace vortex;
 class vx_device {    
 public:
     vx_device() {
-     ram = malloc(1ul<<32);
-     processor_.attach_ram(ram);
+     processor_ = new maxhpc("/dev/ttyUSB1");
+//      if (!processor_->dev_ok) {
+//       delete processor_;
+//       exit(-1);
+//      }
     }
 
     ~vx_device() {    
      if (future_.valid()) {
          future_.wait();
      }
-     //
-     free(ram);
+     delete processor_;
     }
 
-    uint64_t free_loc = 0x100000;
+    uint64_t free_loc = 0x00000000;
     int mem_alloc(uint64_t size, uint64_t* dev_addr) {
      *dev_addr = free_loc;
-     free_loc += size + 256;
+     free_loc += size;
      return 0;
     }
 
     int upload(uint64_t dest_addr, const void* src, uint64_t size) {
-        uint64_t asize = aligned_size(size, CACHE_BLOCK_SIZE);
-        if (dest_addr + asize > GLOBAL_MEM_SIZE)
-            return -1;
-
-        /*printf("VXDRV: upload %ld bytes from 0x%lx:", size, uintptr_t((uint8_t*)src));
-        for (int i = 0;  i < (asize / CACHE_BLOCK_SIZE); ++i) {
-            printf("\n0x%08lx=", dest_addr + i * CACHE_BLOCK_SIZE);
-            for (int j = 0;  j < CACHE_BLOCK_SIZE; ++j) {
-                printf("%02x", *((uint8_t*)src + i * CACHE_BLOCK_SIZE + CACHE_BLOCK_SIZE - 1 - j));
-            }
-        }
-        printf("\n");*/
-        
-        memcpy(ram+dest_addr, src, size);
-        return 0;
+     uint64_t asize = aligned_size(size, CACHE_BLOCK_SIZE);
+     if (dest_addr + asize > GLOBAL_MEM_SIZE) {
+      return -1;
+     }
+     return processor_->ddrW(dest_addr, src, size);
     }
 
     int download(void* dest, uint64_t src_addr, uint64_t size) {
-        uint64_t asize = aligned_size(size, CACHE_BLOCK_SIZE);
-        if (src_addr + asize > GLOBAL_MEM_SIZE)
-            return -1;
-
-        memcpy((uint8_t*)dest, ram+src_addr, size);
-        
-        /*printf("VXDRV: download %ld bytes to 0x%lx:", size, uintptr_t((uint8_t*)dest));
-        for (int i = 0;  i < (asize / CACHE_BLOCK_SIZE); ++i) {
-            printf("\n0x%08lx=", src_addr + i * CACHE_BLOCK_SIZE);
-            for (int j = 0;  j < CACHE_BLOCK_SIZE; ++j) {
-                printf("%02x", *((uint8_t*)dest + i * CACHE_BLOCK_SIZE + CACHE_BLOCK_SIZE - 1 - j));
-            }
-        }
-        printf("\n");*/
-        
-        return 0;
+     uint64_t asize = aligned_size(size, CACHE_BLOCK_SIZE);
+     if (src_addr + asize > GLOBAL_MEM_SIZE) {
+      return -1;
+     }
+     return processor_->ddrR(dest, src_addr, size);
     }
 
     int start(uint64_t krnl_addr, uint64_t args_addr) {   
@@ -115,7 +95,7 @@ public:
 
         // start new run
         future_ = std::async(std::launch::async, [&]{
-            processor_.run();
+            processor_->run();
         });
         return 0;
     }
@@ -139,7 +119,7 @@ public:
         if (future_.valid()) {
             future_.wait(); // ensure prior run completed
         }        
-        processor_.write_dcr(addr, value);
+        processor_->write_dcr(addr, value);
         dcrs_.write(addr, value);
         return 0;
     }
@@ -149,11 +129,9 @@ public:
     }
 
 private:
-
-    void*               ram;
-    Processor           processor_;
-    DeviceConfig        dcrs_;
-    std::future<void>   future_;
+ maxhpc*           processor_;
+ DeviceConfig      dcrs_;
+ std::future<void> future_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -260,7 +238,6 @@ extern int vx_mem_free(vx_device_h hdevice, uint64_t dev_addr) {
 
     DBGPRINT("MEM_FREE: dev_addr=0x%lx\n", dev_addr);
 
-    vx_device *device = ((vx_device*)hdevice);
     return 0;
 }
 
@@ -270,7 +247,6 @@ extern int vx_mem_info(vx_device_h hdevice, uint64_t* mem_free, uint64_t* mem_us
 
     DBGPRINT("%s\n", "MEM_INFO");
 
-    auto device = ((vx_device*)hdevice);
     return 0;
 }
 

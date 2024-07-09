@@ -1,11 +1,13 @@
 include ../common.mk
 
+MAXHPC_DIR := $(VORTEX_HOME)/ecpix-5/vx/sw
+
 DESTDIR ?= $(CURDIR)
 
 SRC_DIR := $(VORTEX_HOME)/runtime/maxhpc
 
 CXXFLAGS += -std=c++11 -Wall -Wextra -pedantic -Wfatal-errors
-CXXFLAGS += -I$(INC_DIR) -I$(COMMON_DIR) -I$(ROOT_DIR)/hw -I$(SIM_DIR)/maxhpc -I$(COMMON_DIR) -I$(SIM_DIR)/common
+CXXFLAGS += -I$(INC_DIR) -I$(COMMON_DIR) -I$(ROOT_DIR)/hw -I$(COMMON_DIR) -I$(SIM_DIR)/common -I$(MAXHPC_DIR)
 CXXFLAGS += -DXLEN_$(XLEN)
 
 # Position independent code
@@ -18,9 +20,9 @@ CXXFLAGS += $(CONFIGS)
 CXXFLAGS += -DDUMP_PERF_STATS
 
 LDFLAGS += -shared -pthread
-LDFLAGS += -L$(DESTDIR) -lmaxhpc
+LDFLAGS += -L$(DESTDIR)
 
-SRCS := $(SRC_DIR)/vortex.cpp $(COMMON_DIR)/utils.cpp
+SRCS := $(SRC_DIR)/vortex.cpp $(COMMON_DIR)/utils.cpp $(MAXHPC_DIR)/maxhpc.cpp
 
 # Debugigng
 ifdef DEBUG
@@ -39,9 +41,7 @@ PROJECT := libvortex.so
 all: $(DESTDIR)/$(PROJECT)
 	
 $(DESTDIR)/$(PROJECT): $(SRCS)
-	DESTDIR=$(DESTDIR) $(MAKE) -C $(ROOT_DIR)/sim/maxhpc $(DESTDIR)/libmaxhpc.so
 	$(CXX) $(CXXFLAGS) $(SRCS) $(LDFLAGS) -o $@
 
 clean:
-	DESTDIR=$(DESTDIR) $(MAKE) -C $(ROOT_DIR)/sim/maxhpc clean
 	rm -rf $(DESTDIR)/$(PROJECT) *.o

@@ -87,41 +87,40 @@ bool sim_trace_enabled() {
 class Processor::Impl {
 public:
   Impl() {
-    // force random values for unitialized signals  
-    Verilated::randReset(VERILATOR_RESET_VALUE);
-    Verilated::randSeed(50);
+   // force random values for unitialized signals  
+   Verilated::randReset(VERILATOR_RESET_VALUE);
+   Verilated::randSeed(50);
 
-    // turn off assertion before reset
-    Verilated::assertOn(false);
+   // turn off assertion before reset
+   Verilated::assertOn(false);
 
-    // create RTL module instance
-    Vcnxt_ = new VerilatedContext;
-    device_ = new VVortex{Vcnxt_};
+   // create RTL module instance
+   Vcnxt_ = new VerilatedContext;
+   device_ = new VVortex{Vcnxt_};
+    #if VM_TRACE_VCD
+     Verilated::traceEverOn(true);
+     trace_ = new VerilatedVcdC();
+     device_->trace(trace_, 99);
+     trace_->open("trace.vcd");
+    #endif
 
-  #if VM_TRACE_VCD
-    Verilated::traceEverOn(true);
-    trace_ = new VerilatedVcdC();
-    device_->trace(trace_, 99);
-    trace_->open("trace.vcd");
-  #endif
-
-    // reset the device
-    this->reset();
+   // reset the device
+   this->reset();
     
-    // Turn on assertion after reset
-    Verilated::assertOn(true);
+   // Turn on assertion after reset
+   Verilated::assertOn(true);
   }
 
   ~Impl() {
-    this->cout_flush();
+   this->cout_flush();
 
-  #if VM_TRACE_VCD
+   #if VM_TRACE_VCD
     trace_->close();
     delete trace_;
-  #endif
+   #endif
     
-    delete device_;
-    delete Vcnxt_;
+   delete device_;
+   delete Vcnxt_;
   }
 
   void cout_flush() {
