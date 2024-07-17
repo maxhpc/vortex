@@ -9,6 +9,7 @@ SRC_DIR := $(VORTEX_HOME)/runtime/maxhpc
 CXXFLAGS += -std=c++11 -Wall -Wextra -pedantic -Wfatal-errors
 CXXFLAGS += -I$(INC_DIR) -I$(COMMON_DIR) -I$(ROOT_DIR)/hw -I$(COMMON_DIR) -I$(SIM_DIR)/common -I$(MAXHPC_DIR)
 CXXFLAGS += -DXLEN_$(XLEN)
+CXXFLAGS += -DMAXHPC
 
 # Position independent code
 CXXFLAGS += -fPIC

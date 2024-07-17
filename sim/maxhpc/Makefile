@@ -10,6 +10,7 @@ CXXFLAGS += -I$(ROOT_DIR)/hw -I$(COMMON_DIR)
 CXXFLAGS += -I$(THIRD_PARTY_DIR)/softfloat/source/include
 CXXFLAGS += -I$(THIRD_PARTY_DIR)
 CXXFLAGS += -DXLEN_$(XLEN)
+CXXFLAGS += -DMAXHPC
 
 LDFLAGS += $(THIRD_PARTY_DIR)/softfloat/build/Linux-x86_64-GCC/softfloat.a
 
@@ -49,6 +50,7 @@ VL_FLAGS += $(CONFIGS)
 VL_FLAGS += $(RTL_INCLUDE)
 VL_FLAGS += $(RTL_PKGS)
 VL_FLAGS += --cc $(TOP) --top-module $(TOP)
+VL_FLAGS += -DMAXHPC
 
 CXXFLAGS += $(CONFIGS)
 
