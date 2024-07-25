@@ -140,6 +140,8 @@
 `define L3_LINE_SIZE `MEM_BLOCK_SIZE
 `endif
 
+`ifndef MAXHPC
+
 `ifdef XLEN_64
 
 `ifndef STARTUP_ADDR
@@ -158,6 +160,18 @@
 
 `ifndef STACK_BASE_ADDR
 `define STACK_BASE_ADDR 32'hFF000000
+`endif
+
+`endif
+
+`else
+
+`ifndef STARTUP_ADDR
+`define STARTUP_ADDR 32'h10000000
+`endif
+
+`ifndef STACK_BASE_ADDR
+`define STACK_BASE_ADDR 32'h1FE00000
 `endif
 
 `endif

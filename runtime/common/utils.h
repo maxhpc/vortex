@@ -40,8 +40,17 @@ void perf_remove_device(vx_device_h device);
 #define CACHE_BLOCK_SIZE    64
 #define ALLOC_BASE_ADDR     CACHE_BLOCK_SIZE
 #define ALLOC_MAX_ADDR      STARTUP_ADDR
+
+#ifndef MAXHPC
+
 #if (XLEN == 64)
 #define GLOBAL_MEM_SIZE      0x200000000  // 8 GB
 #else
 #define GLOBAL_MEM_SIZE      0x100000000  // 4 GB
+#endif
+
+#else
+
+#define GLOBAL_MEM_SIZE      0x20000000  // 512 MB
+
 #endif

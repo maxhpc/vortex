@@ -119,7 +119,7 @@ public:
         if (future_.valid()) {
             future_.wait(); // ensure prior run completed
         }        
-        processor_->write_dcr(addr, value);
+        processor_->dcrW(addr, value);
         dcrs_.write(addr, value);
         return 0;
     }
