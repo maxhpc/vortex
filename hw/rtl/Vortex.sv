@@ -43,18 +43,9 @@ module Vortex import VX_gpu_pkg::*; (
     // Status
     output wire                             busy
 ,
-/* DDR3 */
- output[14:0] ddr3_a
-,output[ 2:0] ddr3_ba
-,output       ddr3_ras_n
-,output       ddr3_cas_n
-,output       ddr3_we_n
-,output[ 1:0] ddr3_dm
-,inout [15:0] ddr3_dq
-,inout [ 1:0] ddr3_dqs_p
-,output       ddr3_clk_p
-,output       ddr3_cke
-,output       ddr3_odt
+/* maxhpc */
+ output                           sim_ebreak /* verilator public */
+,output[`NUM_REGS-1:0][`XLEN-1:0] sim_wb_value /* verilator public */
 /**/
 );
 
@@ -128,8 +119,6 @@ module Vortex import VX_gpu_pkg::*; (
     `UNUSED_VAR (mem_req_fire)
     `UNUSED_VAR (mem_rsp_fire)
 
-    wire sim_ebreak /* verilator public */;
-    wire [`NUM_REGS-1:0][`XLEN-1:0] sim_wb_value /* verilator public */;    
     wire [`NUM_CLUSTERS-1:0] per_cluster_sim_ebreak;
     wire [`NUM_CLUSTERS-1:0][`NUM_REGS-1:0][`XLEN-1:0] per_cluster_sim_wb_value;
     assign sim_ebreak = per_cluster_sim_ebreak[0];
@@ -227,8 +216,5 @@ module Vortex import VX_gpu_pkg::*; (
         $fflush(); // flush stdout buffer
     end
 `endif
-
-/* maxhpc */
-/**/
 
 endmodule

@@ -119,9 +119,8 @@ public:
         if (future_.valid()) {
             future_.wait(); // ensure prior run completed
         }        
-        processor_->dcrW(addr, value);
         dcrs_.write(addr, value);
-        return 0;
+        return processor_->dcrW(addr, value);
     }
 
     uint64_t read_dcr(uint32_t addr) const {
