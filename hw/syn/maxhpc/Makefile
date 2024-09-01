@@ -92,7 +92,7 @@ $(BUILD_DIR)/project.v: gen-sources
 
 build: $(BUILD_DIR)/project.v
 	yosys -p "synth_ecp5 -json ${TOP_LEVEL_ENTITY}.json" $<
-	nextpnr-ecp5 --json ${TOP_LEVEL_ENTITY}.json --textcfg ${TOP_LEVEL_ENTITY}.cfg --um5g-85k --lpf ${VORTEX_HOME}/ecpix-5/ecpix5.lpf --package CABGA554 --freq 100 --lpf-allow-unconstrained
+	nextpnr-ecp5 --json ${TOP_LEVEL_ENTITY}.json --textcfg ${TOP_LEVEL_ENTITY}.cfg --um5g-85k --lpf ${VORTEX_HOME}/ecpix-5/ecpix5.lpf --package CABGA554 --freq 100 --lpf-allow-unconstrained --report ${TOP_LEVEL_ENTITY}.rpt
 	ecppack ${TOP_LEVEL_ENTITY}.cfg ${TOP_LEVEL_ENTITY}.bit
 
 elaborate: $(BUILD_DIR)/project.v
@@ -100,4 +100,4 @@ elaborate: $(BUILD_DIR)/project.v
 
 clean:
 	$(RMDIR) $(BUILD_DIR)
-	rm -f ${TOP_LEVEL_ENTITY}.{bit,cfg,json}
+	rm -f ${TOP_LEVEL_ENTITY}.{rpt,bit,cfg,json}
