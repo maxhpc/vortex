@@ -58,10 +58,13 @@ public:
      delete processor_;
     }
 
-    uint64_t free_loc = 0x00000000;
+    uint64_t free_loc = 0x00000040;
     int mem_alloc(uint64_t size, uint64_t* dev_addr) {
      *dev_addr = free_loc;
      free_loc += size;
+     if ((free_loc&0x3F) != 0) {
+      free_loc += 0x40-free_loc&0x3F;
+     }
      return 0;
     }
 
@@ -118,7 +121,7 @@ public:
     int write_dcr(uint32_t addr, uint32_t value) {
         if (future_.valid()) {
             future_.wait(); // ensure prior run completed
-        }        
+        }
         dcrs_.write(addr, value);
         return processor_->dcrW(addr, value);
     }
